@@ -8,6 +8,8 @@ module load proj/6.3.0 udunits/2.2.26
 R
 install.packages("devtools")
 library(devtools)
+
 install_github("jgx65/hierfstat”)
+library(hierfstat)
 
 ```
