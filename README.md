@@ -46,27 +46,26 @@ vcftools --vcf ./all_samples_varient_chrs_only_header_scaffolds_cleared.vcf --ke
 ```bash
 vcftools --vcf ./all_samples_varient_chrs_only_header_scaffolds_cleared.vcf --keep ../populations_and_species/all_sample_list --chr chr1S  --chr chr2S --chr chr3S --chr chr4S --chr chr5S  --chr chr6S  --chr chr7S  --chr chr8S  --chr chr9_10S  --recode --recode-INFO-all --stdout > S_only_varient_chrs_only_header_scaffolds_cleared.vcf
 ```
+# for laevis only, filtered laevis samples only from all of three above genomes
+
+# all chrs
+```bash
+vcftools --vcf all_samples_varient_chrs_only_header_scaffolds_cleared.vcf --keep ../populations_and_species/laevis_sample_list --recode --recode-INFO-all --out ./laevis_varient_chrs_only_header_scaffolds_cleared.vcf
+```
+# L only
+```bash
+vcftools --vcf L_only_varient_chrs_only_header_scaffolds_cleared.vcf --keep ../populations_and_species/laevis_sample_list --recode --recode-INFO-all --out ./laevis_L_only_varient_chrs_only_header_scaffolds_cleared.vcf
+```
+#S only
+```bash
+vcftools --vcf S_only_varient_chrs_only_header_scaffolds_cleared.vcf --keep ../populations_and_species/laevis_sample_list --recode --recode-INFO-all --out ./laevis_S_only_varient_chrs_only_header_scaffolds_cleared.vcf
+```
+
+
 # keep different subgenomes in different folders when proceeding so you can use same codes in seperate folders
 
 # convert data to hierfstat input format
-```bash
-#!/bin/sh
-#SBATCH --job-name=bwa_505
-#SBATCH --nodes=1
-#SBATCH --ntasks-per-node=1
-#SBATCH --time=24:00:00
-#SBATCH --mem=64gb
-#SBATCH --output=bwa505.%J.out
-#SBATCH --error=bwa505.%J.err
-#SBATCH --account=def-ben
-
-#SBATCH --mail-user=premacht@mcmaster.ca
-#SBATCH --mail-type=BEGIN
-#SBATCH --mail-type=END
-#SBATCH --mail-type=FAIL
-#SBATCH --mail-type=REQUEUE
-#SBATCH --mail-type=ALL
-
+``` bash
 module load nixpkgs/16.09
 module load gcc/7.3.0
 module load r
@@ -75,10 +74,11 @@ R
 library(radiator)
 
 test_all_pop <- radiator::genomic_converter(
-  data = "all_samples_varient_chrs_only_header_scaffolds_cleared.vcf", 
-  strata = "strata_L_and_G.tsv", 
-  output = "hierfstat"
-)
+                                              data = "../../vcfs/laevis_varient_chrs_only_header_scaffolds_cleared.vcf.recode.vcf", 
+                                                strata = "../../strata/strata_pops_L_only.tsv", 
+                                                output = "hierfstat"
+                                                )
+
 ```
 
 # installing R packages in computecanada
@@ -112,11 +112,15 @@ library(data.table)
 
 
 
-my_samples<-read.fstat("./01_radiator_genomic_converter_20200924@0013/radiator_data_20200924@0013_hierfstat.dat")
+my_samples<-read.fstat("./01_radiator_genomic_converter_20201115@1142/radiator_data_20201115@1142_hierfstat.dat")
 
 fst<-basic.stats(my_samples,diploid=TRUE)
 print("done calculating pairwise fst for whole genome")
+
+
+final<-fst$overall
+write.csv(final,"global_fst_without_ci.csv")
 ```
-#Calculating ppfst/ creating usable data table and saving as CSV
+# Calculating ppfst/ creating usable data table and saving as CSV
 
 
